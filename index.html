@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Yuva Attendance</title>
+    <title>Keshav System</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
@@ -39,7 +39,6 @@
 
       .header-content {
         width: 100%;
-        /* Laptop Override happens in @media below */
       }
 
       .app-bar {
@@ -76,7 +75,6 @@
       /* MAIN CONTENT (Cards)                      */
       /* ========================================= */
       .main-container {
-        /* Mobile Default: Fill Screen */
         width: 100%;
         display: flex;
         flex-direction: column;
@@ -170,7 +168,7 @@
     <div class="header-area">
       <div class="header-content">
         <div class="app-bar">
-          <h3 class="app-title">Yuva Attendance</h3>
+          <h3 class="app-title">Keshav System</h3>
           <div id="dateDisplay" class="date-tag">Connecting...</div>
         </div>
         
@@ -194,17 +192,26 @@
       var globalData = [];
       var targetColIndex = -1;
 
-      // 1. Initialize - Fetch Data from Google Sheet API
+      // 1. Initialize - Start the Auto-Refresh Loop
       document.addEventListener("DOMContentLoaded", function() {
-        fetch(API_URL)
+        loadData(); // Load immediately
+        
+        // 🔄 AUTO REFRESH: Fetch new data every 3 seconds (3000 ms)
+        setInterval(loadData, 3000);
+      });
+
+      // New function to handle fetching
+      function loadData() {
+        // We add a timestamp (?t=...) to prevent caching
+        fetch(API_URL + "?t=" + new Date().getTime())
           .then(response => response.json())
           .then(data => initApp(data))
           .catch(error => {
-            document.getElementById('gridContainer').innerHTML = 
-            '<div class="error-box">Failed to load data.<br>Check internet connection or API URL.</div>';
-            console.error(error);
+            console.error("Auto-refresh skipped (network error)");
+            // We don't show an error on screen for auto-refresh fails 
+            // to avoid annoying the user if connection flickers.
           });
-      });
+      }
 
       function initApp(response) {
         var data = response.data;
@@ -215,7 +222,7 @@
 
         if (targetColIndex === -1) {
           document.getElementById('gridContainer').innerHTML = 
-            '<div class="error-box">⚠️ Date "18-01-2026" not found in Sheet Header.</div>';
+            '<div class="error-box">⚠️ Date "' + currentDate + '" not found in Sheet Header.</div>';
           return;
         }
 
@@ -223,7 +230,14 @@
         globalData = [];
         for (var i = 1; i < data.length; i++) {
           var row = data[i];
+          // Skip empty rows
           if(row[0] === "" && row[1] === "") continue; 
+
+          // --- FIX FOR CHECKBOXES ---
+          // This line converts whatever is in the cell (boolean true or string "TRUE") 
+          // into a consistent format that Javascript understands.
+          var rawStatus = row[targetColIndex];
+          var normalizedStatus = String(rawStatus).toUpperCase() === 'TRUE'; 
 
           globalData.push({
             rowIndex: i, 
@@ -232,7 +246,7 @@
             number: row[2],
             designation: row[3],
             mandal: row[4], 
-            status: row[targetColIndex]
+            status: normalizedStatus // This is now strictly true or false
           });
         }
         
@@ -248,6 +262,7 @@
           return;
         }
 
+        // Group by Mandal
         var groups = {};
         dataToRender.forEach(function(item) {
           var m = item.mandal || "Other";
@@ -257,10 +272,12 @@
 
         var html = '';
         
+        // Sort keys to keep order consistent
         Object.keys(groups).sort().forEach(function(mandalName) {
           var items = groups[mandalName];
           var total = items.length;
-          var present = items.filter(i => i.status === 'TRUE').length;
+          // Count only true values
+          var present = items.filter(i => i.status === true).length;
           var safeMandalId = mandalName.replace(/\s+/g, '-');
           
           html += '<div class="mandal-card">';
@@ -274,7 +291,7 @@
           `;
           html += '<div>';
           items.forEach(function(item) {
-            var isPresent = (item.status === 'TRUE');
+            var isPresent = (item.status === true);
             var btnClass = isPresent ? 'present' : 'absent';
             var btnText = isPresent ? 'Present' : 'Absent';
 
@@ -303,7 +320,9 @@
         var input = document.getElementById('searchInput');
         var term = input.value.toUpperCase().trim();
         var clearBtn = document.getElementById('clearBtn');
+        
         clearBtn.style.display = term.length > 0 ? 'block' : 'none';
+        
         var filtered = globalData.filter(function(item) {
           return String(item.name).toUpperCase().includes(term);
         });
@@ -317,7 +336,7 @@
         input.focus();
       }
 
-      // 4. Toggle Status (Using fetch API)
+      // 4. Toggle Status
       function toggleStatus(rowIndex, mandalName, btnElement) {
         var wasPresent = btnElement.classList.contains('present');
         var newIsPresent = !wasPresent;
@@ -333,12 +352,13 @@
           btnElement.innerText = "Absent";
         }
 
+        // Update Local Data
         var item = globalData.find(d => d.rowIndex === rowIndex);
-        if(item) item.status = newIsPresent ? 'TRUE' : '';
+        if(item) item.status = newIsPresent;
 
         updateHeaderCount(mandalName);
 
-        // Send POST request to Google Script
+        // Send to Server
         const payload = JSON.stringify({
           rowIndex: rowIndex,
           colIndex: targetColIndex,
@@ -347,14 +367,11 @@
 
         fetch(API_URL, {
           method: 'POST',
-          mode: 'no-cors', // Important for simple GAS requests
-          headers: {
-            'Content-Type': 'text/plain'
-          },
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
           body: payload
         }).then(response => {
-           // 'no-cors' mode returns an opaque response, we assume success if no network error
-           console.log("Updated");
+           console.log("Updated successfully");
         }).catch(err => {
            console.error("Failed to update", err);
            alert("Connection error! Change might not be saved.");
@@ -364,7 +381,8 @@
       function updateHeaderCount(mandalName) {
         var itemsInMandal = globalData.filter(d => d.mandal === mandalName);
         var total = itemsInMandal.length;
-        var present = itemsInMandal.filter(d => d.status === 'TRUE').length;
+        var present = itemsInMandal.filter(d => d.status === true).length;
+        
         var safeMandalId = mandalName.replace(/\s+/g, '-');
         var badge = document.getElementById('count-' + safeMandalId);
         
