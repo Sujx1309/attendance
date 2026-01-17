@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Keshav System</title>
+    <title>Yuva Attendance</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
@@ -168,7 +168,7 @@
     <div class="header-area">
       <div class="header-content">
         <div class="app-bar">
-          <h3 class="app-title">Keshav System</h3>
+          <h3 class="app-title">Yuva Attendance</h3>
           <div id="dateDisplay" class="date-tag">Connecting...</div>
         </div>
         
@@ -191,25 +191,29 @@
 
       var globalData = [];
       var targetColIndex = -1;
+      
+      // 🕒 NEW: Variable to track when user last clicked
+      var lastInteractionTime = 0; 
 
-      // 1. Initialize - Start the Auto-Refresh Loop
       document.addEventListener("DOMContentLoaded", function() {
-        loadData(); // Load immediately
-        
-        // 🔄 AUTO REFRESH: Fetch new data every 3 seconds (3000 ms)
-        setInterval(loadData, 3000);
+        loadData(); 
+        // Increased to 5 seconds to be safer with Google Quotas
+        setInterval(loadData, 5000); 
       });
 
-      // New function to handle fetching
       function loadData() {
-        // We add a timestamp (?t=...) to prevent caching
+        // 🛡️ BUG FIX: Check if user clicked recently
+        // If user clicked in the last 10 seconds (10000ms), STOP the refresh.
+        if (Date.now() - lastInteractionTime < 10000) {
+          console.log("⏸️ Refresh paused to allow saving...");
+          return; 
+        }
+
         fetch(API_URL + "?t=" + new Date().getTime())
           .then(response => response.json())
           .then(data => initApp(data))
           .catch(error => {
-            console.error("Auto-refresh skipped (network error)");
-            // We don't show an error on screen for auto-refresh fails 
-            // to avoid annoying the user if connection flickers.
+            console.error("Auto-refresh skipped");
           });
       }
 
@@ -226,16 +230,11 @@
           return;
         }
 
-        // Parse Data
         globalData = [];
         for (var i = 1; i < data.length; i++) {
           var row = data[i];
-          // Skip empty rows
           if(row[0] === "" && row[1] === "") continue; 
 
-          // --- FIX FOR CHECKBOXES ---
-          // This line converts whatever is in the cell (boolean true or string "TRUE") 
-          // into a consistent format that Javascript understands.
           var rawStatus = row[targetColIndex];
           var normalizedStatus = String(rawStatus).toUpperCase() === 'TRUE'; 
 
@@ -246,14 +245,19 @@
             number: row[2],
             designation: row[3],
             mandal: row[4], 
-            status: normalizedStatus // This is now strictly true or false
+            status: normalizedStatus 
           });
         }
         
-        renderList(globalData);
+        // Smart Render: Preserve Search
+        var searchInput = document.getElementById('searchInput');
+        if (searchInput && searchInput.value.trim() !== "") {
+           handleSearch(); 
+        } else {
+           renderList(globalData); 
+        }
       }
 
-      // 2. Render List
       function renderList(dataToRender) {
         var container = document.getElementById('gridContainer');
         
@@ -262,7 +266,6 @@
           return;
         }
 
-        // Group by Mandal
         var groups = {};
         dataToRender.forEach(function(item) {
           var m = item.mandal || "Other";
@@ -272,11 +275,9 @@
 
         var html = '';
         
-        // Sort keys to keep order consistent
         Object.keys(groups).sort().forEach(function(mandalName) {
           var items = groups[mandalName];
           var total = items.length;
-          // Count only true values
           var present = items.filter(i => i.status === true).length;
           var safeMandalId = mandalName.replace(/\s+/g, '-');
           
@@ -315,7 +316,6 @@
         container.innerHTML = html;
       }
 
-      // 3. Search Logic
       function handleSearch() {
         var input = document.getElementById('searchInput');
         var term = input.value.toUpperCase().trim();
@@ -336,12 +336,14 @@
         input.focus();
       }
 
-      // 4. Toggle Status
       function toggleStatus(rowIndex, mandalName, btnElement) {
+        // 🕒 UPDATE TIME: Tell the app "User is busy, stop refreshing!"
+        lastInteractionTime = Date.now();
+
         var wasPresent = btnElement.classList.contains('present');
         var newIsPresent = !wasPresent;
 
-        // UI Update (Optimistic)
+        // UI Update
         if (newIsPresent) {
           btnElement.classList.remove('absent');
           btnElement.classList.add('present');
@@ -352,13 +354,11 @@
           btnElement.innerText = "Absent";
         }
 
-        // Update Local Data
         var item = globalData.find(d => d.rowIndex === rowIndex);
         if(item) item.status = newIsPresent;
 
         updateHeaderCount(mandalName);
 
-        // Send to Server
         const payload = JSON.stringify({
           rowIndex: rowIndex,
           colIndex: targetColIndex,
@@ -371,10 +371,9 @@
           headers: { 'Content-Type': 'text/plain' },
           body: payload
         }).then(response => {
-           console.log("Updated successfully");
+           console.log("Updated");
         }).catch(err => {
            console.error("Failed to update", err);
-           alert("Connection error! Change might not be saved.");
         });
       }
 
