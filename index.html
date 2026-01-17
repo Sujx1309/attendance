@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Yuva Attendance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+      :root {
+        --primary: #007bff;      
+        --bg: #f2f4f8;           
+        --card: #ffffff;         
+        --text-main: #333;       
+        --text-light: #777;      
+        --success: #28a745;      
+        --btn-grey: #eff2f5;     
+      }
+
+      * { box-sizing: border-box; }
+
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        background-color: var(--bg); 
+        margin: 0; 
+        padding: 0;
+        -webkit-tap-highlight-color: transparent; 
+      }
+
+      /* ========================================= */
+      /* HEADER AREA                               */
+      /* ========================================= */
+      .header-area {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        width: 100%; 
+      }
+
+      .header-content {
+        width: 100%;
+        /* Laptop Override happens in @media below */
+      }
+
+      .app-bar {
+        background: var(--primary);
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .app-title { font-size: 18px; font-weight: 700; margin: 0; }
+      .date-tag { background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+
+      .search-wrapper { padding: 10px 15px; background: white; position: relative; }
+      #searchInput {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        font-size: 16px; 
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
+        background: #f8f9fa;
+        outline: none;
+        transition: all 0.2s;
+      }
+      #searchInput:focus { background: #fff; border-color: var(--primary); }
+      .clear-btn {
+        position: absolute; right: 25px; top: 22px;
+        font-size: 20px; color: #999; 
+        display: none; cursor: pointer;
+        padding: 5px;
+      }
+
+      /* ========================================= */
+      /* MAIN CONTENT (Cards)                      */
+      /* ========================================= */
+      .main-container {
+        /* Mobile Default: Fill Screen */
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px; 
+      }
+
+      /* ========================================= */
+      /* 💻 LAPTOP / TABLET OVERRIDES             */
+      /* ========================================= */
+      @media (min-width: 768px) {
+        .header-content {
+          max-width: 800px;
+          margin: 0 auto; 
+        }
+
+        .main-container {
+          max-width: 800px;
+          margin: 0 auto; 
+          padding: 25px 0; 
+        }
+      }
+
+      /* --- CARD STYLES --- */
+      .mandal-card {
+        background: var(--card);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border: 1px solid #e1e4e8;
+        width: 100%; 
+      }
+
+      .card-header {
+        background: #f8f9fa;
+        padding: 12px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+      }
+      .mandal-name { font-weight: 700; color: #333; font-size: 15px; }
+      .count-badge {
+        background: #6c757d; color: white;
+        padding: 4px 10px; border-radius: 12px;
+        font-size: 12px; font-weight: 600;
+        transition: background 0.3s;
+      }
+      .count-badge.active { background: var(--success); }
+
+      /* --- USER ROW --- */
+      .user-row {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #f1f1f1;
+        height: 64px; 
+      }
+      .user-row:last-child { border-bottom: none; }
+
+      .u-info { flex: 1; min-width: 0; padding-right: 10px; }
+      .u-name { font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .u-meta { font-size: 12px; color: var(--text-light); }
+
+      /* --- BUTTONS --- */
+      .btn {
+        width: 85px;
+        height: 36px;
+        border-radius: 18px;
+        border: none;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: transform 0.1s, background 0.2s;
+        flex-shrink: 0;
+      }
+      .btn:active { transform: scale(0.95); }
+      
+      .btn.absent { background: var(--btn-grey); color: #6c757d; }
+      .btn.absent:hover { background: #e2e6ea; }
+
+      .btn.present { background: var(--success); color: white; box-shadow: 0 3px 8px rgba(40,167,69,0.3); }
+      .btn.present:hover { background: #218838; }
+
+      .loading-state { padding: 60px 20px; text-align: center; color: #999; font-style: italic; width: 100%; }
+      .error-box { background: #ffebee; color: #b71c1c; padding: 15px; margin: 15px; border-radius: 8px; text-align: center; width: 100%; }
+    </style>
+  </head>
+  <body>
+
+    <div class="header-area">
+      <div class="header-content">
+        <div class="app-bar">
+          <h3 class="app-title">Yuva Attendance</h3>
+          <div id="dateDisplay" class="date-tag">Connecting...</div>
+        </div>
+        
+        <div class="search-wrapper">
+          <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search Name..." autocomplete="off">
+          <span id="clearBtn" class="clear-btn" onclick="clearSearch()">✕</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="gridContainer" class="main-container">
+      <div class="loading-state">Connecting to Database...</div>
+    </div>
+
+    <script>
+      // ---------------------------------------------------------
+      // ⚠️ PASTE YOUR DEPLOYED WEB APP URL HERE
+      const API_URL = "https://script.google.com/macros/s/AKfycbzlcGFnw4ixwPDJTqni47CfmHE3SVYTzKz-vKRWjEOwuMigRZ4Wa0YpwYgPx8JOSfFK/exec"; 
+      // ---------------------------------------------------------
+
+      var globalData = [];
+      var targetColIndex = -1;
+
+      // 1. Initialize - Fetch Data from Google Sheet API
+      document.addEventListener("DOMContentLoaded", function() {
+        fetch(API_URL)
+          .then(response => response.json())
+          .then(data => initApp(data))
+          .catch(error => {
+            document.getElementById('gridContainer').innerHTML = 
+            '<div class="error-box">Failed to load data.<br>Check internet connection or API URL.</div>';
+            console.error(error);
+          });
+      });
+
+      function initApp(response) {
+        var data = response.data;
+        targetColIndex = response.dateColIndex;
+        var currentDate = response.currentDate;
+
+        document.getElementById('dateDisplay').innerText = currentDate;
+
+        if (targetColIndex === -1) {
+          document.getElementById('gridContainer').innerHTML = 
+            '<div class="error-box">⚠️ Date "18-01-2026" not found in Sheet Header.</div>';
+          return;
+        }
+
+        // Parse Data
+        globalData = [];
+        for (var i = 1; i < data.length; i++) {
+          var row = data[i];
+          if(row[0] === "" && row[1] === "") continue; 
+
+          globalData.push({
+            rowIndex: i, 
+            srNo: row[0],
+            name: row[1],
+            number: row[2],
+            designation: row[3],
+            mandal: row[4], 
+            status: row[targetColIndex]
+          });
+        }
+        
+        renderList(globalData);
+      }
+
+      // 2. Render List
+      function renderList(dataToRender) {
+        var container = document.getElementById('gridContainer');
+        
+        if(dataToRender.length === 0) {
+          container.innerHTML = '<div style="padding:40px; text-align:center; color:#999; width:100%;">No names found</div>';
+          return;
+        }
+
+        var groups = {};
+        dataToRender.forEach(function(item) {
+          var m = item.mandal || "Other";
+          if(!groups[m]) groups[m] = [];
+          groups[m].push(item);
+        });
+
+        var html = '';
+        
+        Object.keys(groups).sort().forEach(function(mandalName) {
+          var items = groups[mandalName];
+          var total = items.length;
+          var present = items.filter(i => i.status === 'TRUE').length;
+          var safeMandalId = mandalName.replace(/\s+/g, '-');
+          
+          html += '<div class="mandal-card">';
+          html += `
+            <div class="card-header">
+              <span class="mandal-name">${mandalName}</span>
+              <span id="count-${safeMandalId}" class="count-badge ${present > 0 ? 'active' : ''}">
+                ${present} / ${total}
+              </span>
+            </div>
+          `;
+          html += '<div>';
+          items.forEach(function(item) {
+            var isPresent = (item.status === 'TRUE');
+            var btnClass = isPresent ? 'present' : 'absent';
+            var btnText = isPresent ? 'Present' : 'Absent';
+
+            html += `
+              <div class="user-row">
+                <div class="u-info">
+                  <div class="u-name">${item.name}</div>
+                  <div class="u-meta">#${item.srNo} • ${item.designation}</div>
+                </div>
+                <button 
+                  class="btn ${btnClass}" 
+                  onclick="toggleStatus(${item.rowIndex}, '${mandalName}', this)">
+                  ${btnText}
+                </button>
+              </div>
+            `;
+          });
+          html += '</div></div>';
+        });
+
+        container.innerHTML = html;
+      }
+
+      // 3. Search Logic
+      function handleSearch() {
+        var input = document.getElementById('searchInput');
+        var term = input.value.toUpperCase().trim();
+        var clearBtn = document.getElementById('clearBtn');
+        clearBtn.style.display = term.length > 0 ? 'block' : 'none';
+        var filtered = globalData.filter(function(item) {
+          return String(item.name).toUpperCase().includes(term);
+        });
+        renderList(filtered);
+      }
+
+      function clearSearch() {
+        var input = document.getElementById('searchInput');
+        input.value = '';
+        handleSearch(); 
+        input.focus();
+      }
+
+      // 4. Toggle Status (Using fetch API)
+      function toggleStatus(rowIndex, mandalName, btnElement) {
+        var wasPresent = btnElement.classList.contains('present');
+        var newIsPresent = !wasPresent;
+
+        // UI Update (Optimistic)
+        if (newIsPresent) {
+          btnElement.classList.remove('absent');
+          btnElement.classList.add('present');
+          btnElement.innerText = "Present";
+        } else {
+          btnElement.classList.remove('present');
+          btnElement.classList.add('absent');
+          btnElement.innerText = "Absent";
+        }
+
+        var item = globalData.find(d => d.rowIndex === rowIndex);
+        if(item) item.status = newIsPresent ? 'TRUE' : '';
+
+        updateHeaderCount(mandalName);
+
+        // Send POST request to Google Script
+        const payload = JSON.stringify({
+          rowIndex: rowIndex,
+          colIndex: targetColIndex,
+          isChecked: newIsPresent
+        });
+
+        fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Important for simple GAS requests
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: payload
+        }).then(response => {
+           // 'no-cors' mode returns an opaque response, we assume success if no network error
+           console.log("Updated");
+        }).catch(err => {
+           console.error("Failed to update", err);
+           alert("Connection error! Change might not be saved.");
+        });
+      }
+
+      function updateHeaderCount(mandalName) {
+        var itemsInMandal = globalData.filter(d => d.mandal === mandalName);
+        var total = itemsInMandal.length;
+        var present = itemsInMandal.filter(d => d.status === 'TRUE').length;
+        var safeMandalId = mandalName.replace(/\s+/g, '-');
+        var badge = document.getElementById('count-' + safeMandalId);
+        
+        if(badge) {
+          badge.innerText = present + " / " + total;
+          if(present > 0) badge.classList.add('active');
+          else badge.classList.remove('active');
+        }
+      }
+    </script>
+  </body>
+</html>
