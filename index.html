@@ -1,255 +1,420 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Yuva Attendance</title>
+    <title>Keshav Yuvak Mandal</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+      /* --- THEME VARIABLES --- */
       :root {
-        --primary: #007bff;      
-        --bg: #f2f4f8;           
-        --card: #ffffff;         
-        --text-main: #333;       
-        --text-light: #777;      
-        --success: #28a745; 
-        --error: #dc3545;     
-        --btn-grey: #eff2f5;     
+        --primary: #0e3e52; 
+        --primary-gradient: linear-gradient(135deg, #0e3e52 0%, #155e7a 100%);
+        --accent: #0ea5e9;
+        --bg: #f3f4f6;
+        --white: #ffffff;
+        --text-dark: #111827;
+        --text-grey: #6b7280;
+        --border: #e5e7eb;
+        --success: #10b981;
+        --danger: #ef4444;
       }
-
-      * { box-sizing: border-box; }
-
+      
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      
       body { 
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        font-family: 'Sora', sans-serif; 
         background-color: var(--bg); 
-        margin: 0; 
-        padding: 0;
+        color: var(--text-dark);
         -webkit-tap-highlight-color: transparent; 
       }
-
-      /* UTILITY: Hide/Show Sections */
+      
       .hidden { display: none !important; }
 
-      /* ===========================
-         LOGIN SCREEN STYLES 
-         =========================== */
-      .login-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        padding: 20px;
-        background: var(--bg);
-      }
+      /* --- ICONS (SVG CLASS) --- */
+      .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .icon-sm { width: 16px; height: 16px; margin-right: 5px; }
 
+      /* --- BUTTONS --- */
+      .btn-primary {
+        width: 100%; padding: 14px;
+        background: var(--primary-gradient); 
+        color: white;
+        border: none; border-radius: 12px;
+        font-size: 16px; font-weight: 600; cursor: pointer;
+        box-shadow: 0 4px 6px -1px rgba(14, 62, 82, 0.3);
+        transition: transform 0.1s;
+      }
+      .btn-primary:active { transform: scale(0.98); }
+
+      .icon-btn { 
+        background: transparent; border: none; cursor: pointer; 
+        padding: 8px; color: inherit; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .icon-btn:hover { background: rgba(0,0,0,0.05); }
+
+      /* --- LOGIN SCREEN --- */
+      .login-wrapper {
+        display: flex; align-items: center; justify-content: center;
+        min-height: 100vh; padding: 20px; background: var(--bg);
+      }
+      
       .login-card {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        width: 100%;
-        max-width: 350px;
-        text-align: center;
+        background: white; width: 100%; padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        display: flex; flex-direction: column; align-items: center;
       }
-
-      .login-title { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 25px; }
-      
-      .input-group { margin-bottom: 15px; text-align: left; }
-      .input-group label { display: block; font-size: 12px; color: var(--text-light); margin-bottom: 5px; }
-      .login-input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #e1e4e8;
-        border-radius: 8px;
-        font-size: 16px;
-        outline: none;
-      }
-      .login-input:focus { border-color: var(--primary); }
-
-      .btn-login {
-        width: 100%;
-        padding: 12px;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 10px;
-      }
-      .btn-login:disabled { background: #ccc; }
-
-      #login-error { color: var(--error); font-size: 14px; margin-top: 15px; display: none; }
-
-      /* ===========================
-         APP HEADER & MAIN STYLES 
-         =========================== */
-      .header-area {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background-color: white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        width: 100%; 
-      }
-
-      .header-content { width: 100%; }
-
-      .app-bar {
-        background: var(--primary);
-        color: white;
-        padding: 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .app-title { font-size: 18px; font-weight: 700; margin: 0; }
-      
-      .logout-btn {
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-      }
-
-      .date-tag { background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; }
-
-      .search-wrapper { padding: 10px 15px; background: white; position: relative; }
-      #searchInput {
-        width: 100%;
-        padding: 12px 40px 12px 15px;
-        font-size: 16px; 
-        border: 1px solid #e1e4e8;
-        border-radius: 8px;
-        background: #f8f9fa;
-        outline: none;
-        transition: all 0.2s;
-      }
-      #searchInput:focus { background: #fff; border-color: var(--primary); }
-      .clear-btn {
-        position: absolute; right: 25px; top: 22px;
-        font-size: 20px; color: #999; 
-        display: none; cursor: pointer;
-        padding: 5px;
-      }
-
-      .main-container { width: 100%; display: flex; flex-direction: column; gap: 15px; padding: 15px; }
 
       @media (min-width: 768px) {
-        .header-content { max-width: 800px; margin: 0 auto; }
-        .main-container { max-width: 800px; margin: 0 auto; padding: 25px 0; }
+        .login-card { max-width: 650px; padding: 60px; }
       }
 
-      /* CARDS */
-      .mandal-card { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e1e4e8; width: 100%; }
-      .card-header { background: #f8f9fa; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-      .mandal-name { font-weight: 700; color: #333; font-size: 15px; }
-      .count-badge { background: #6c757d; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; transition: background 0.3s; }
-      .count-badge.active { background: var(--success); }
+      /* Vector Image Styling */
+      .vector-img {
+        width: 180px; height: auto; margin-bottom: 30px;
+      }
 
-      /* ROWS */
-      .user-row { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f1f1; height: 64px; }
-      .user-row:last-child { border-bottom: none; }
-      .u-info { flex: 1; min-width: 0; padding-right: 10px; }
-      .u-name { font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .u-meta { font-size: 12px; color: var(--text-light); }
+      .login-title { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+      .login-sub { font-size: 14px; color: var(--text-grey); text-align: center; margin-bottom: 40px; max-width: 80%; line-height: 1.6; }
+      
+      .input-group { width: 100%; margin-bottom: 20px; }
+      .input-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
+      .login-input {
+        width: 100%; padding: 14px 16px;
+        border: 1px solid var(--border); border-radius: 10px;
+        font-size: 15px; outline: none; background: #f9fafb;
+        font-family: 'Sora', sans-serif;
+      }
+      .login-input:focus { border-color: var(--primary); background: white; }
 
-      /* BUTTONS */
-      .btn { width: 85px; height: 36px; border-radius: 18px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; transition: transform 0.1s, background 0.2s; flex-shrink: 0; }
-      .btn:active { transform: scale(0.95); }
-      .btn.absent { background: var(--btn-grey); color: #6c757d; }
-      .btn.absent:hover { background: #e2e6ea; }
-      .btn.present { background: var(--success); color: white; box-shadow: 0 3px 8px rgba(40,167,69,0.3); }
-      .btn.present:hover { background: #218838; }
+      /* --- APP LAYOUT --- */
+      .app-wrapper { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
 
-      .loading-state { padding: 60px 20px; text-align: center; color: #999; font-style: italic; width: 100%; }
-      .error-box { background: #ffebee; color: #b71c1c; padding: 15px; margin: 15px; border-radius: 8px; text-align: center; width: 100%; }
+      @media (min-width: 1024px) {
+        .app-wrapper { max-width: 1000px; margin: 0 auto; border-left: 1px solid #eee; border-right: 1px solid #eee; background: white; }
+        body { background-color: #e5e7eb; } 
+      }
+
+      /* --- HEADERS --- */
+      .app-header {
+        background: var(--primary); color: white;
+        padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
+        position: sticky; top: 0; z-index: 100;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+      .header-title { font-size: 18px; font-weight: 700; display:flex; align-items: center; gap: 10px; }
+      
+      .secondary-header {
+        background: white; padding: 16px 24px; border-bottom: 1px solid #eee; 
+        display: flex; align-items: center; justify-content: space-between;
+        position: sticky; top: 0; z-index: 90;
+      }
+      
+      /* DESKTOP NAV */
+      .desktop-nav { display: none; gap: 15px; }
+      .mobile-menu-btn { display: block; }
+
+      @media (min-width: 1024px) {
+        .desktop-nav { display: flex; align-items: center; }
+        .mobile-menu-btn { display: none; }
+        .sidebar-overlay { display: none !important; }
+      }
+
+      .nav-link { 
+        color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 600; cursor: pointer; 
+        padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px;
+      }
+      .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
+
+      /* --- SEARCH BOX (Used in Home and Attendance) --- */
+      .search-box { padding: 10px 24px; position: relative; background: white; }
+      .search-input { 
+        width: 100%; padding: 12px 15px 12px 45px; 
+        border: 1px solid var(--border); border-radius: 12px; 
+        outline: none; font-size: 15px; font-family: 'Sora', sans-serif;
+        background: #f9fafb;
+      }
+      .search-input:focus { background: white; border-color: var(--primary); }
+      .search-icon-pos { position: absolute; left: 38px; top: 22px; color: #9ca3af; }
+
+      /* --- EVENT LIST --- */
+      .event-list { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+      .event-card {
+        background: white; border-radius: 12px; padding: 20px;
+        border: 1px solid var(--border); border-left: 5px solid var(--accent);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        cursor: pointer; transition: transform 0.2s;
+      }
+      .event-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.06); }
+
+      /* --- GRID --- */
+      .grid-container { padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 100px; }
+      .mandal-card { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+      .mandal-header { 
+        background: #f8fafc; padding: 12px 20px; 
+        font-weight: 700; font-size: 14px; color: var(--text-dark);
+        border-bottom: 1px solid var(--border); 
+        display:flex; justify-content:space-between; align-items: center;
+      }
+      .user-row { 
+        display: flex; align-items: center; justify-content: space-between; 
+        padding: 14px 20px; border-bottom: 1px solid #f1f5f9; 
+      }
+      
+      .u-name { font-weight: 600; font-size: 15px; color: var(--text-dark); }
+      .u-meta { font-size: 12px; color: var(--text-grey); margin-top: 4px; display: flex; align-items: center; gap: 5px; }
+      
+      .status-btn { 
+        padding: 8px 16px; border-radius: 30px; border: none; 
+        font-size: 13px; font-weight: 600; cursor: pointer; width: 90px; 
+        transition: all 0.2s; font-family: 'Sora', sans-serif;
+      }
+      .is-absent { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+      .is-present { background: var(--success); color: white; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
+      .status-btn:active { transform: scale(0.95); }
+
+      /* --- REPORT --- */
+      .report-container { padding: 0; background: white; min-height: calc(100vh - 70px); }
+      .r-table { width: 100%; border-collapse: collapse; }
+      .r-table th { text-align: left; padding: 16px 20px; background: #f8fafc; font-size: 13px; font-weight: 700; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+      .r-table td { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+      .r-total-row { background: #ecfdf5; }
+
+      /* --- SIDEBAR --- */
+      .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 998; display: none; }
+      .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: white; z-index: 999; transition: left 0.3s; padding: 20px; display: flex; flex-direction: column; }
+      .sidebar.active { left: 0; }
+      .sb-header { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+      .sb-item { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 12px; cursor: pointer; color: var(--text-dark); font-weight: 600; transition: background 0.1s; }
+      .sb-item:hover { background: #f3f4f6; }
+      
+      .fab { 
+        position: fixed; bottom: 30px; right: 30px; 
+        width: 60px; height: 60px; 
+        background: var(--primary-gradient); color: white; 
+        border-radius: 50%; border: none; 
+        box-shadow: 0 8px 20px rgba(14, 62, 82, 0.4);
+        cursor: pointer; z-index: 200;
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.2s;
+      }
+      .fab:hover { transform: scale(1.05); }
+
+      /* --- MODAL --- */
+      .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+      .modal-card { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
     </style>
   </head>
   <body>
 
-    <div id="login-view" class="login-container">
+    <div id="view-login" class="login-wrapper">
       <div class="login-card">
-        <div class="login-title">Yuva Attendance</div>
-        
+        <img src="vector.svg" alt="Login Illustration" class="vector-img">
+      
+        <div class="login-title">Keshav Yuvak Mandal</div>
+        <div class="login-sub">Streamline attendance tracking for multiple events with efficiency.</div>
+
         <div class="input-group">
-          <label>Email</label>
-          <input type="email" id="email" class="login-input" placeholder="Enter your email">
-        </div>
-        
-        <div class="input-group">
-          <label>Password</label>
-          <input type="password" id="password" class="login-input" placeholder="Enter your password">
+          <label class="input-label">User ID</label>
+          <input type="text" id="email" class="login-input" placeholder="Enter User ID">
         </div>
 
-        <button class="btn-login" onclick="handleLogin()" id="loginBtn">Login</button>
-        <div id="login-error"></div>
+        <div class="input-group">
+          <label class="input-label">Password</label>
+          <input type="password" id="password" class="login-input" placeholder="Enter Password">
+        </div>
+
+        <button class="btn-primary" onclick="handleLogin()" id="loginBtn">
+          Login Account
+        </button>
+        <p id="login-error" style="color:var(--danger); font-size:13px; margin-top:15px; display:none; text-align: center;"></p>
       </div>
     </div>
 
-    <div id="app-view" class="hidden">
-      <div class="header-area">
-        <div class="header-content">
-          <div class="app-bar">
-            <h3 class="app-title">Yuva Attendance</h3>
-            <div style="display:flex; gap:10px; align-items:center;">
-              <div id="dateDisplay" class="date-tag">Loading...</div>
-              <button onclick="handleLogout()" class="logout-btn">Logout</button>
-            </div>
-          </div>
-          
-          <div class="search-wrapper">
-            <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search Name..." autocomplete="off">
-            <span id="clearBtn" class="clear-btn" onclick="clearSearch()">✕</span>
-          </div>
+
+    <div id="app-wrapper" class="app-wrapper hidden">
+      
+      <div class="app-header">
+        <div class="header-title">
+           <button class="icon-btn mobile-menu-btn" onclick="toggleSidebar()">
+             <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+           </button>
+           <span>Keshav Yuvak Mandal</span>
+        </div>
+        
+        <div class="desktop-nav">
+           <div class="nav-link" onclick="goTo('home')">
+             <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+             Events
+           </div>
+           <div class="nav-link" onclick="handleLogout()" style="color:#fca5a5;">
+             <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+             Logout
+           </div>
         </div>
       </div>
 
-      <div id="gridContainer" class="main-container">
-        <div class="loading-state">Syncing Database...</div>
+      <div id="view-home" class="hidden">
+        <div class="search-box">
+          <span class="search-icon-pos">
+            <svg class="icon" style="color:#9ca3af" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input type="text" class="search-input" id="eventSearch" onkeyup="filterEvents()" placeholder="Search Events...">
+        </div>
+
+        <div class="event-list" id="eventListContainer"></div>
+        
+        <button class="fab" onclick="showAddModal()">
+          <svg class="icon" style="width:30px; height:30px;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+      </div>
+
+      <div id="view-attendance" class="hidden">
+        <div class="secondary-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button class="icon-btn" onclick="goTo('home')" title="Back to Events">
+               <svg class="icon" style="color:var(--text-dark);" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <span class="page-title" id="currentEventTitle">Event Name</span>
+          </div>
+          <button class="icon-btn" onclick="goTo('report')" title="View Report" style="color:var(--primary)">
+             <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          </button>
+        </div>
+
+        <div class="search-box" style="border-bottom: 1px solid #eee;">
+            <span class="search-icon-pos" style="top:22px;">
+              <svg class="icon" style="color:#9ca3af" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" class="search-input" id="studentSearch" onkeyup="filterStudents()" placeholder="Search Name...">
+        </div>
+
+        <div class="grid-container" id="attendanceGrid"></div>
+      </div>
+
+      <div id="view-report" class="hidden">
+        <div class="secondary-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button class="icon-btn" onclick="goTo('attendance')">
+               <svg class="icon" style="color:var(--text-dark);" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <span class="page-title">Attendance Report</span>
+          </div>
+          <button class="icon-btn" onclick="downloadCSV()" title="Download Excel" style="color:var(--success)">
+             <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          </button>
+        </div>
+        
+        <div class="report-container">
+          <table class="r-table">
+            <thead>
+              <tr><th>Mandal</th><th>Present</th><th>Total</th><th>%</th></tr>
+            </thead>
+            <tbody id="reportTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div> <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+       <div class="sb-header">
+          <span>Menu</span>
+          <button class="icon-btn" onclick="toggleSidebar()">
+             <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+       </div>
+       <div class="sb-item" onclick="goTo('home'); toggleSidebar()">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Events List
+       </div>
+       <div class="sb-item" onclick="handleLogout()" style="color:var(--danger)">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Logout
+       </div>
+    </div>
+
+    <div id="addModal" class="modal">
+      <div class="modal-card">
+        <h3 style="margin-bottom:15px; font-weight:700;">Create New Event</h3>
+        <div class="input-group">
+           <label class="input-label">Event Name</label>
+           <input type="text" id="newEventInput" class="login-input" placeholder="e.g. 25-10-2025">
+        </div>
+        <button class="btn-primary" onclick="addNewEvent()">Create Event</button>
+        <button onclick="document.getElementById('addModal').style.display='none'" style="width:100%; margin-top:10px; background:white; border:none; padding:12px; cursor:pointer; font-weight:600; color:var(--text-grey);">Cancel</button>
       </div>
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
-      // ---------------------------------------------------------
-      // ⚠️ PASTE YOUR KEYS HERE
-      // ---------------------------------------------------------
+      // ⚠️ CONFIGURATION
       const SUPABASE_URL = 'https://ofkswzqvoenwrexolcpm.supabase.co';
       const SUPABASE_KEY = 'sb_publishable_xQ3nwGY_IDTJj9PVDjmslw_NkOGaGg5';
-      
       const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      // DATE SETUP
-      const today = new Date();
-      const day = String(today.getDate()).padStart(2, '0');
-      const month = today.toLocaleString('en-GB', { month: 'short' });
-      const year = today.getFullYear();
-      const dateColName = `${day} ${month} ${year}`;
-      
-      var globalData = [];
+      let globalMembers = [];
+      let globalEvents = [];
+      let currentEvent = null;
+      let attendanceMap = {}; 
 
-      document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('dateDisplay').innerText = dateColName;
-        
-        // CHECK LOGIN STATUS FIRST
+      document.addEventListener("DOMContentLoaded", () => {
         checkSession();
       });
 
-      // ===========================
-      // AUTHENTICATION LOGIC
-      // ===========================
+      // --- AUTH & AUTO-LOAD LATEST ---
       async function checkSession() {
         const { data: { session } } = await _supabase.auth.getSession();
-        if (session) {
-          showApp();
+        if(session) {
+           initializeLatestEvent();
         } else {
-          showLogin();
+           goTo('login');
+        }
+      }
+
+      async function initializeLatestEvent() {
+         document.getElementById('view-login').classList.add('hidden');
+         document.getElementById('app-wrapper').classList.remove('hidden');
+         
+         const { data: cols, error } = await _supabase.rpc('get_event_columns');
+         
+         if(error || !cols || cols.length === 0) {
+            goTo('home'); // No events? Go to list to create one
+            return;
+         }
+
+         globalEvents = cols.map(c => c.column_name).reverse();
+         // AUTO-OPEN LATEST
+         openEvent(globalEvents[0]); 
+      }
+
+      // --- NAVIGATION ---
+      function goTo(viewName) {
+        document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('app-wrapper').classList.add('hidden');
+
+        if(viewName === 'login') {
+            document.getElementById('view-login').classList.remove('hidden');
+        } else {
+            document.getElementById('app-wrapper').classList.remove('hidden');
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+        }
+
+        if(viewName === 'home') loadEventListUI();
+        if(viewName === 'report') loadReport();
+      }
+
+      function toggleSidebar() {
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('sidebarOverlay');
+        if(sb.classList.contains('active')) {
+          sb.classList.remove('active'); ov.style.display='none';
+        } else {
+          sb.classList.add('active'); ov.style.display='block';
         }
       }
 
@@ -257,244 +422,217 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const btn = document.getElementById('loginBtn');
-        const errBox = document.getElementById('login-error');
-
-        btn.disabled = true;
-        btn.innerText = "Checking...";
-        errBox.style.display = 'none';
-
-        const { data, error } = await _supabase.auth.signInWithPassword({
-          email: email,
-          password: password,
-        });
-
-        if (error) {
-          errBox.innerText = error.message;
-          errBox.style.display = 'block';
-          btn.disabled = false;
-          btn.innerText = "Login";
+        const err = document.getElementById('login-error');
+        
+        btn.innerText = "Verifying...";
+        const { error } = await _supabase.auth.signInWithPassword({ email, password });
+        
+        if(error) {
+           err.innerText = error.message; err.style.display='block'; btn.innerText = "Login Account";
         } else {
-          showApp();
+           initializeLatestEvent();
         }
       }
 
       async function handleLogout() {
         await _supabase.auth.signOut();
-        window.location.reload(); // Reload to reset everything
+        window.location.reload();
       }
 
-      function showApp() {
-        document.getElementById('login-view').classList.add('hidden');
-        document.getElementById('app-view').classList.remove('hidden');
-        loadData(); // Start loading data only after login
-        setupRealtime();
+      // --- ATTENDANCE ---
+      async function openEvent(evtName) {
+         currentEvent = evtName;
+         document.getElementById('currentEventTitle').innerText = evtName;
+         document.getElementById('attendanceGrid').innerHTML = '<div style="text-align:center; padding:40px; color:#999;">Loading Data...</div>';
+         
+         goTo('attendance');
+
+         const memReq = _supabase.from('Members').select('*').order('Mandal').order('Name');
+         const attReq = _supabase.from('Attandance').select(`ID, "${evtName}"`);
+
+         const [mRes, aRes] = await Promise.all([memReq, attReq]);
+
+         if(mRes.error) return alert("Error loading members");
+         
+         globalMembers = mRes.data;
+         attendanceMap = {};
+         
+         if(aRes.data) {
+            aRes.data.forEach(row => {
+               attendanceMap[row.ID] = row[evtName];
+            });
+         }
+         renderAttendance(globalMembers);
       }
 
-      function showLogin() {
-        document.getElementById('login-view').classList.remove('hidden');
-        document.getElementById('app-view').classList.add('hidden');
-      }
+      function renderAttendance(membersToRender) {
+         const container = document.getElementById('attendanceGrid');
+         container.innerHTML = "";
+         
+         if(membersToRender.length === 0) {
+            container.innerHTML = "<div style='text-align:center; padding:20px; color:#999;'>No members found</div>";
+            return;
+         }
 
-      // ===========================
-      // DATA LOGIC
-      // ===========================
-      function setupRealtime() {
-         _supabase
-          .channel('public:Attandance')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'Attandance' }, payload => {
-            // Logic to handle realtime updates
-            const newRow = payload.new;
-             if (newRow && newRow.hasOwnProperty(dateColName)) {
-                handleRealtimeUpdate(newRow.ID, newRow[dateColName]);
-            }
-          })
-          .subscribe();
-      }
+         const groups = {};
+         membersToRender.forEach(m => {
+            const grp = m.Mandal || "Other";
+            if(!groups[grp]) groups[grp] = [];
+            groups[grp].push(m);
+         });
 
-      async function loadData() {
-        // STEP A: Get Student Details
-        const membersReq = _supabase
-          .from('Members')
-          .select('*')
-          .order('Mandal', { ascending: true })
-          .order('Name', { ascending: true });
+         Object.keys(groups).sort().forEach(mandal => {
+            const list = groups[mandal];
+            const presentCount = list.filter(m => attendanceMap[m.ID]).length;
+            
+            const card = document.createElement('div');
+            card.className = 'mandal-card';
+            let rowsHtml = '';
+            
+            list.forEach(m => {
+               const isP = attendanceMap[m.ID] === true;
+               rowsHtml += `
+                 <div class="user-row">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                       <div style="width:36px; height:36px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:700; font-size:13px;">
+                          ${m.Name.charAt(0)}
+                       </div>
+                       <div class="user-info">
+                          <span class="u-name">${m.Name} ${m.Surname || ''}</span>
+                          <span class="u-meta">
+                            ID: ${m.ID}
+                          </span>
+                       </div>
+                    </div>
+                    <button id="btn-${m.ID}" class="status-btn ${isP ? 'is-present' : 'is-absent'}" 
+                       onclick="toggleStatus('${m.ID}', '${mandal}', this)">
+                       ${isP ? 'Present' : 'Absent'}
+                    </button>
+                 </div>
+               `;
+            });
 
-        // STEP B: Get Attendance Status
-        const attendanceReq = _supabase
-          .from('Attandance')
-          .select(`ID, "${dateColName}"`);
-
-        const [membersRes, attendanceRes] = await Promise.all([membersReq, attendanceReq]);
-
-        if (membersRes.error) {
-          console.error("Members Error:", membersRes.error);
-          document.getElementById('gridContainer').innerHTML = '<div class="error-box">Error loading Members.</div>';
-          return;
-        }
-        
-        // Handle if column doesn't exist
-        const attendanceData = attendanceRes.error ? [] : attendanceRes.data;
-        if(attendanceRes.error) console.log("Date column likely missing, will create on first click.");
-
-        const statusMap = {};
-        attendanceData.forEach(row => {
-            statusMap[row.ID] = row[dateColName]; 
-        });
-
-        globalData = membersRes.data.map(m => ({
-          id: m.ID,
-          name: m.Name + " " + (m.Surname || ""), 
-          number: m["Mobile number"],
-          designation: m.Designation,
-          mandal: m.Mandal,
-          status: statusMap[m.ID] === true 
-        }));
-
-        renderList(globalData);
-      }
-
-      // ... [The renderList, toggleStatus, etc. functions remain the same] ...
-      
-      function renderList(dataToRender) {
-        var container = document.getElementById('gridContainer');
-        
-        if(dataToRender.length === 0) {
-          container.innerHTML = '<div style="padding:40px; text-align:center; color:#999; width:100%;">No names found</div>';
-          return;
-        }
-
-        var groups = {};
-        dataToRender.forEach(function(item) {
-          var m = item.mandal || "Other";
-          if(!groups[m]) groups[m] = [];
-          groups[m].push(item);
-        });
-
-        var html = '';
-        Object.keys(groups).sort().forEach(function(mandalName) {
-          var items = groups[mandalName];
-          var total = items.length;
-          var present = items.filter(i => i.status === true).length;
-          var safeMandalId = mandalName.replace(/\s+/g, '-');
-          
-          html += '<div class="mandal-card">';
-          html += `
-            <div class="card-header">
-              <span class="mandal-name">${mandalName}</span>
-              <span id="count-${safeMandalId}" class="count-badge ${present > 0 ? 'active' : ''}">
-                ${present} / ${total}
-              </span>
-            </div>
-          `;
-          html += '<div>';
-          items.forEach(function(item) {
-            var isPresent = (item.status === true);
-            var btnClass = isPresent ? 'present' : 'absent';
-            var btnText = isPresent ? 'Present' : 'Absent';
-
-            // Fixed alphanumeric ID quotes
-            html += `
-              <div class="user-row">
-                <div class="u-info">
-                  <div class="u-name">${item.name}</div>
-                  <div class="u-meta">#${item.id} • ${item.designation}</div>
-                </div>
-                <button 
-                  id="btn-${item.id}"
-                  class="btn ${btnClass}" 
-                  onclick="toggleStatus('${item.id}', '${mandalName}', this)">
-                  ${btnText}
-                </button>
-              </div>
+            card.innerHTML = `
+               <div class="mandal-header">
+                  <span style="display:flex; align-items:center; gap:8px;">${mandal}</span>
+                  <span id="badge-${mandal.replace(/\s/g,'')}" style="background:#e0f2fe; color:var(--primary); padding:4px 10px; border-radius:20px; font-size:12px;">${presentCount} / ${list.length}</span>
+               </div>
+               <div>${rowsHtml}</div>
             `;
-          });
-          html += '</div></div>';
+            container.appendChild(card);
+         });
+      }
+
+      // NEW: SEARCH STUDENTS
+      function filterStudents() {
+        const term = document.getElementById('studentSearch').value.toLowerCase();
+        const filtered = globalMembers.filter(m => 
+           m.Name.toLowerCase().includes(term) || 
+           (m.Surname || "").toLowerCase().includes(term) ||
+           String(m.ID).includes(term)
+        );
+        renderAttendance(filtered);
+      }
+
+      async function toggleStatus(id, mandal, btn) {
+         const isPresent = !btn.classList.contains('is-present');
+         btn.className = `status-btn ${isPresent ? 'is-present' : 'is-absent'}`;
+         btn.innerText = isPresent ? 'Present' : 'Absent';
+         attendanceMap[id] = isPresent;
+         
+         // Update Badge (Find all members of this mandal, check status)
+         const grpMembers = globalMembers.filter(m => (m.Mandal||"Other") === mandal);
+         const pCount = grpMembers.filter(m => attendanceMap[m.ID]).length;
+         
+         const badge = document.getElementById(`badge-${mandal.replace(/\s/g,'')}`);
+         if(badge) badge.innerText = `${pCount} / ${grpMembers.length}`;
+
+         const payload = { ID: id };
+         payload[currentEvent] = isPresent;
+         await _supabase.from('Attandance').upsert(payload);
+      }
+
+      // --- EVENT LIST ---
+      function loadEventListUI() { renderEventList(globalEvents); }
+
+      function renderEventList(events) {
+        const container = document.getElementById('eventListContainer');
+        container.innerHTML = "";
+        events.forEach(evtName => {
+           const div = document.createElement('div');
+           div.className = 'event-card';
+           div.onclick = () => openEvent(evtName);
+           div.innerHTML = `
+             <div style="display:flex; justify-content:space-between; align-items:center;">
+               <div style="font-weight:700; font-size:16px; color:var(--text-dark);">${evtName}</div>
+               <svg class="icon" style="color:#cbd5e1;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+             </div>
+             <div style="font-size:12px; color:var(--text-grey); margin-top:5px;">Tap to view attendance</div>
+           `;
+           container.appendChild(div);
         });
-
-        container.innerHTML = html;
+      }
+      
+      function filterEvents() {
+        const term = document.getElementById('eventSearch').value.toLowerCase();
+        renderEventList(globalEvents.filter(e => e.toLowerCase().includes(term)));
       }
 
-      async function toggleStatus(id, mandalName, btnElement) {
-        var wasPresent = btnElement.classList.contains('present');
-        var newIsPresent = !wasPresent;
-
-        updateButtonUI(btnElement, newIsPresent);
-
-        var item = globalData.find(d => d.id == id);
-        if(item) item.status = newIsPresent;
-        updateHeaderCount(mandalName);
-
-        // PREPARE UPSERT
-        const payload = { ID: id }; 
-        payload[dateColName] = newIsPresent;
-
-        const { error } = await _supabase
-          .from('Attandance')
-          .upsert(payload) // Creates row if missing
-          .select();
-
-        if (error) {
-          console.error("Save failed:", error);
-          alert("Error: " + error.message);
-          updateButtonUI(btnElement, !newIsPresent);
-        }
-      }
-
-      function updateButtonUI(btnElement, isPresent) {
-        if (isPresent) {
-          btnElement.classList.remove('absent');
-          btnElement.classList.add('present');
-          btnElement.innerText = "Present";
+      function showAddModal() { document.getElementById('addModal').style.display='flex'; }
+      
+      async function addNewEvent() {
+        const name = document.getElementById('newEventInput').value.trim();
+        if(!name) return;
+        
+        const btn = document.querySelector('#addModal .btn-primary');
+        btn.innerText = "Creating...";
+        
+        const { error } = await _supabase.rpc('add_event_column', { column_name: name });
+        if(error) {
+           alert(error.message);
+           btn.innerText = "Create Event";
         } else {
-          btnElement.classList.remove('present');
-          btnElement.classList.add('absent');
-          btnElement.innerText = "Absent";
+           document.getElementById('addModal').style.display='none';
+           btn.innerText = "Create Event";
+           // Reload logic
+           const { data: cols } = await _supabase.rpc('get_event_columns');
+           globalEvents = cols.map(c => c.column_name).reverse();
+           openEvent(name);
         }
       }
 
-      function updateHeaderCount(mandalName) {
-        var itemsInMandal = globalData.filter(d => d.mandal === mandalName);
-        var total = itemsInMandal.length;
-        var present = itemsInMandal.filter(d => d.status === true).length;
-        
-        var safeMandalId = mandalName.replace(/\s+/g, '-');
-        var badge = document.getElementById('count-' + safeMandalId);
-        
-        if(badge) {
-          badge.innerText = present + " / " + total;
-          if(present > 0) badge.classList.add('active');
-          else badge.classList.remove('active');
-        }
+      // --- REPORT ---
+      function loadReport() {
+         const tbody = document.getElementById('reportTableBody');
+         tbody.innerHTML = "";
+         const groups = {};
+         globalMembers.forEach(m => {
+            const grp = m.Mandal || "Other";
+            if(!groups[grp]) groups[grp] = { total: 0, present: 0 };
+            groups[grp].total++;
+            if(attendanceMap[m.ID]) groups[grp].present++;
+         });
+         
+         let gT = 0, gP = 0;
+         Object.keys(groups).sort().forEach(m => {
+            const d = groups[m];
+            gT += d.total; gP += d.present;
+            const pct = Math.round((d.present/d.total)*100)||0;
+            tbody.innerHTML += `<tr><td>${m}</td><td>${d.present}</td><td>${d.total}</td><td>${pct}%</td></tr>`;
+         });
+         const totPct = Math.round((gP/gT)*100)||0;
+         tbody.innerHTML += `<tr class="r-total-row"><td>Total</td><td>${gP}</td><td>${gT}</td><td>${totPct}%</td></tr>`;
       }
 
-      function handleRealtimeUpdate(id, newStatus) {
-        var item = globalData.find(d => d.id == id);
-        if (item) {
-          item.status = newStatus;
-          var btn = document.getElementById('btn-' + item.id);
-          if (btn) {
-            updateButtonUI(btn, item.status);
-            updateHeaderCount(item.mandal);
-          }
-        }
-      }
-
-      function handleSearch() {
-        var input = document.getElementById('searchInput');
-        var term = input.value.toUpperCase().trim();
-        var clearBtn = document.getElementById('clearBtn');
-        clearBtn.style.display = term.length > 0 ? 'block' : 'none';
-        var filtered = globalData.filter(function(item) {
-          return String(item.name).toUpperCase().includes(term);
-        });
-        renderList(filtered);
-      }
-
-      function clearSearch() {
-        var input = document.getElementById('searchInput');
-        input.value = '';
-        handleSearch(); 
-        input.focus();
+      function downloadCSV() {
+         let csv = "ID,Name,Mandal,Status,Event\n";
+         globalMembers.forEach(m => {
+            csv += `${m.ID},"${m.Name}",${m.Mandal},${attendanceMap[m.ID]?"Present":"Absent"},${currentEvent}\n`;
+         });
+         const a = document.createElement('a');
+         a.href = window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+         a.download = `${currentEvent}_Report.csv`;
+         a.click();
       }
     </script>
   </body>
