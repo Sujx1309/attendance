@@ -11,7 +11,8 @@
         --card: #ffffff;         
         --text-main: #333;       
         --text-light: #777;      
-        --success: #28a745;      
+        --success: #28a745; 
+        --error: #dc3545;     
         --btn-grey: #eff2f5;     
       }
 
@@ -25,9 +26,65 @@
         -webkit-tap-highlight-color: transparent; 
       }
 
-      /* ========================================= */
-      /* HEADER AREA                               */
-      /* ========================================= */
+      /* UTILITY: Hide/Show Sections */
+      .hidden { display: none !important; }
+
+      /* ===========================
+         LOGIN SCREEN STYLES 
+         =========================== */
+      .login-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+        background: var(--bg);
+      }
+
+      .login-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 350px;
+        text-align: center;
+      }
+
+      .login-title { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 25px; }
+      
+      .input-group { margin-bottom: 15px; text-align: left; }
+      .input-group label { display: block; font-size: 12px; color: var(--text-light); margin-bottom: 5px; }
+      .login-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+      }
+      .login-input:focus { border-color: var(--primary); }
+
+      .btn-login {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .btn-login:disabled { background: #ccc; }
+
+      #login-error { color: var(--error); font-size: 14px; margin-top: 15px; display: none; }
+
+      /* ===========================
+         APP HEADER & MAIN STYLES 
+         =========================== */
       .header-area {
         position: sticky;
         top: 0;
@@ -37,9 +94,7 @@
         width: 100%; 
       }
 
-      .header-content {
-        width: 100%;
-      }
+      .header-content { width: 100%; }
 
       .app-bar {
         background: var(--primary);
@@ -50,6 +105,17 @@
         align-items: center;
       }
       .app-title { font-size: 18px; font-weight: 700; margin: 0; }
+      
+      .logout-btn {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
       .date-tag { background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; }
 
       .search-wrapper { padding: 10px 15px; background: white; position: relative; }
@@ -71,91 +137,32 @@
         padding: 5px;
       }
 
-      /* ========================================= */
-      /* MAIN CONTENT (Cards)                      */
-      /* ========================================= */
-      .main-container {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px; 
-      }
+      .main-container { width: 100%; display: flex; flex-direction: column; gap: 15px; padding: 15px; }
 
-      /* ========================================= */
-      /* 💻 LAPTOP / TABLET OVERRIDES             */
-      /* ========================================= */
       @media (min-width: 768px) {
-        .header-content {
-          max-width: 800px;
-          margin: 0 auto; 
-        }
-
-        .main-container {
-          max-width: 800px;
-          margin: 0 auto; 
-          padding: 25px 0; 
-        }
+        .header-content { max-width: 800px; margin: 0 auto; }
+        .main-container { max-width: 800px; margin: 0 auto; padding: 25px 0; }
       }
 
-      /* --- CARD STYLES --- */
-      .mandal-card {
-        background: var(--card);
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        border: 1px solid #e1e4e8;
-        width: 100%; 
-      }
-
-      .card-header {
-        background: #f8f9fa;
-        padding: 12px 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #eee;
-      }
+      /* CARDS */
+      .mandal-card { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e1e4e8; width: 100%; }
+      .card-header { background: #f8f9fa; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
       .mandal-name { font-weight: 700; color: #333; font-size: 15px; }
-      .count-badge {
-        background: #6c757d; color: white;
-        padding: 4px 10px; border-radius: 12px;
-        font-size: 12px; font-weight: 600;
-        transition: background 0.3s;
-      }
+      .count-badge { background: #6c757d; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; transition: background 0.3s; }
       .count-badge.active { background: var(--success); }
 
-      /* --- USER ROW --- */
-      .user-row {
-        display: flex;
-        align-items: center;
-        padding: 12px 15px;
-        border-bottom: 1px solid #f1f1f1;
-        height: 64px; 
-      }
+      /* ROWS */
+      .user-row { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f1f1; height: 64px; }
       .user-row:last-child { border-bottom: none; }
-
       .u-info { flex: 1; min-width: 0; padding-right: 10px; }
       .u-name { font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .u-meta { font-size: 12px; color: var(--text-light); }
 
-      /* --- BUTTONS --- */
-      .btn {
-        width: 85px;
-        height: 36px;
-        border-radius: 18px;
-        border: none;
-        font-weight: 600;
-        font-size: 13px;
-        cursor: pointer;
-        transition: transform 0.1s, background 0.2s;
-        flex-shrink: 0;
-      }
+      /* BUTTONS */
+      .btn { width: 85px; height: 36px; border-radius: 18px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; transition: transform 0.1s, background 0.2s; flex-shrink: 0; }
       .btn:active { transform: scale(0.95); }
-      
       .btn.absent { background: var(--btn-grey); color: #6c757d; }
       .btn.absent:hover { background: #e2e6ea; }
-
       .btn.present { background: var(--success); color: white; box-shadow: 0 3px 8px rgba(40,167,69,0.3); }
       .btn.present:hover { background: #218838; }
 
@@ -165,99 +172,189 @@
   </head>
   <body>
 
-    <div class="header-area">
-      <div class="header-content">
-        <div class="app-bar">
-          <h3 class="app-title">Yuva Attendance</h3>
-          <div id="dateDisplay" class="date-tag">Connecting...</div>
+    <div id="login-view" class="login-container">
+      <div class="login-card">
+        <div class="login-title">Yuva Attendance</div>
+        
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="email" class="login-input" placeholder="Enter your email">
         </div>
         
-        <div class="search-wrapper">
-          <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search Name..." autocomplete="off">
-          <span id="clearBtn" class="clear-btn" onclick="clearSearch()">✕</span>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" class="login-input" placeholder="Enter your password">
         </div>
+
+        <button class="btn-login" onclick="handleLogin()" id="loginBtn">Login</button>
+        <div id="login-error"></div>
       </div>
     </div>
 
-    <div id="gridContainer" class="main-container">
-      <div class="loading-state">Connecting to Database...</div>
+    <div id="app-view" class="hidden">
+      <div class="header-area">
+        <div class="header-content">
+          <div class="app-bar">
+            <h3 class="app-title">Yuva Attendance</h3>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div id="dateDisplay" class="date-tag">Loading...</div>
+              <button onclick="handleLogout()" class="logout-btn">Logout</button>
+            </div>
+          </div>
+          
+          <div class="search-wrapper">
+            <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search Name..." autocomplete="off">
+            <span id="clearBtn" class="clear-btn" onclick="clearSearch()">✕</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="gridContainer" class="main-container">
+        <div class="loading-state">Syncing Database...</div>
+      </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
       // ---------------------------------------------------------
-      // ⚠️ PASTE YOUR DEPLOYED WEB APP URL HERE
-      const API_URL = "https://script.google.com/macros/s/AKfycbzlcGFnw4ixwPDJTqni47CfmHE3SVYTzKz-vKRWjEOwuMigRZ4Wa0YpwYgPx8JOSfFK/exec"; 
+      // ⚠️ PASTE YOUR KEYS HERE
       // ---------------------------------------------------------
-
-      var globalData = [];
-      var targetColIndex = -1;
+      const SUPABASE_URL = 'https://ofkswzqvoenwrexolcpm.supabase.co';
+      const SUPABASE_KEY = 'sb_publishable_xQ3nwGY_IDTJj9PVDjmslw_NkOGaGg5';
       
-      // 🕒 NEW: Variable to track when user last clicked
-      var lastInteractionTime = 0; 
+      const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // DATE SETUP
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = today.toLocaleString('en-GB', { month: 'short' });
+      const year = today.getFullYear();
+      const dateColName = `${day} ${month} ${year}`;
+      
+      var globalData = [];
 
       document.addEventListener("DOMContentLoaded", function() {
-        loadData(); 
-        // Increased to 5 seconds to be safer with Google Quotas
-        setInterval(loadData, 5000); 
+        document.getElementById('dateDisplay').innerText = dateColName;
+        
+        // CHECK LOGIN STATUS FIRST
+        checkSession();
       });
 
-      function loadData() {
-        // 🛡️ BUG FIX: Check if user clicked recently
-        // If user clicked in the last 10 seconds (10000ms), STOP the refresh.
-        if (Date.now() - lastInteractionTime < 10000) {
-          console.log("⏸️ Refresh paused to allow saving...");
-          return; 
+      // ===========================
+      // AUTHENTICATION LOGIC
+      // ===========================
+      async function checkSession() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+          showApp();
+        } else {
+          showLogin();
         }
-
-        fetch(API_URL + "?t=" + new Date().getTime())
-          .then(response => response.json())
-          .then(data => initApp(data))
-          .catch(error => {
-            console.error("Auto-refresh skipped");
-          });
       }
 
-      function initApp(response) {
-        var data = response.data;
-        targetColIndex = response.dateColIndex;
-        var currentDate = response.currentDate;
+      async function handleLogin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const btn = document.getElementById('loginBtn');
+        const errBox = document.getElementById('login-error');
 
-        document.getElementById('dateDisplay').innerText = currentDate;
+        btn.disabled = true;
+        btn.innerText = "Checking...";
+        errBox.style.display = 'none';
 
-        if (targetColIndex === -1) {
-          document.getElementById('gridContainer').innerHTML = 
-            '<div class="error-box">⚠️ Date "' + currentDate + '" not found in Sheet Header.</div>';
+        const { data, error } = await _supabase.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (error) {
+          errBox.innerText = error.message;
+          errBox.style.display = 'block';
+          btn.disabled = false;
+          btn.innerText = "Login";
+        } else {
+          showApp();
+        }
+      }
+
+      async function handleLogout() {
+        await _supabase.auth.signOut();
+        window.location.reload(); // Reload to reset everything
+      }
+
+      function showApp() {
+        document.getElementById('login-view').classList.add('hidden');
+        document.getElementById('app-view').classList.remove('hidden');
+        loadData(); // Start loading data only after login
+        setupRealtime();
+      }
+
+      function showLogin() {
+        document.getElementById('login-view').classList.remove('hidden');
+        document.getElementById('app-view').classList.add('hidden');
+      }
+
+      // ===========================
+      // DATA LOGIC
+      // ===========================
+      function setupRealtime() {
+         _supabase
+          .channel('public:Attandance')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'Attandance' }, payload => {
+            // Logic to handle realtime updates
+            const newRow = payload.new;
+             if (newRow && newRow.hasOwnProperty(dateColName)) {
+                handleRealtimeUpdate(newRow.ID, newRow[dateColName]);
+            }
+          })
+          .subscribe();
+      }
+
+      async function loadData() {
+        // STEP A: Get Student Details
+        const membersReq = _supabase
+          .from('Members')
+          .select('*')
+          .order('Mandal', { ascending: true })
+          .order('Name', { ascending: true });
+
+        // STEP B: Get Attendance Status
+        const attendanceReq = _supabase
+          .from('Attandance')
+          .select(`ID, "${dateColName}"`);
+
+        const [membersRes, attendanceRes] = await Promise.all([membersReq, attendanceReq]);
+
+        if (membersRes.error) {
+          console.error("Members Error:", membersRes.error);
+          document.getElementById('gridContainer').innerHTML = '<div class="error-box">Error loading Members.</div>';
           return;
         }
-
-        globalData = [];
-        for (var i = 1; i < data.length; i++) {
-          var row = data[i];
-          if(row[0] === "" && row[1] === "") continue; 
-
-          var rawStatus = row[targetColIndex];
-          var normalizedStatus = String(rawStatus).toUpperCase() === 'TRUE'; 
-
-          globalData.push({
-            rowIndex: i, 
-            srNo: row[0],
-            name: row[1],
-            number: row[2],
-            designation: row[3],
-            mandal: row[4], 
-            status: normalizedStatus 
-          });
-        }
         
-        // Smart Render: Preserve Search
-        var searchInput = document.getElementById('searchInput');
-        if (searchInput && searchInput.value.trim() !== "") {
-           handleSearch(); 
-        } else {
-           renderList(globalData); 
-        }
+        // Handle if column doesn't exist
+        const attendanceData = attendanceRes.error ? [] : attendanceRes.data;
+        if(attendanceRes.error) console.log("Date column likely missing, will create on first click.");
+
+        const statusMap = {};
+        attendanceData.forEach(row => {
+            statusMap[row.ID] = row[dateColName]; 
+        });
+
+        globalData = membersRes.data.map(m => ({
+          id: m.ID,
+          name: m.Name + " " + (m.Surname || ""), 
+          number: m["Mobile number"],
+          designation: m.Designation,
+          mandal: m.Mandal,
+          status: statusMap[m.ID] === true 
+        }));
+
+        renderList(globalData);
       }
 
+      // ... [The renderList, toggleStatus, etc. functions remain the same] ...
+      
       function renderList(dataToRender) {
         var container = document.getElementById('gridContainer');
         
@@ -274,7 +371,6 @@
         });
 
         var html = '';
-        
         Object.keys(groups).sort().forEach(function(mandalName) {
           var items = groups[mandalName];
           var total = items.length;
@@ -296,15 +392,17 @@
             var btnClass = isPresent ? 'present' : 'absent';
             var btnText = isPresent ? 'Present' : 'Absent';
 
+            // Fixed alphanumeric ID quotes
             html += `
               <div class="user-row">
                 <div class="u-info">
                   <div class="u-name">${item.name}</div>
-                  <div class="u-meta">#${item.srNo} • ${item.designation}</div>
+                  <div class="u-meta">#${item.id} • ${item.designation}</div>
                 </div>
                 <button 
+                  id="btn-${item.id}"
                   class="btn ${btnClass}" 
-                  onclick="toggleStatus(${item.rowIndex}, '${mandalName}', this)">
+                  onclick="toggleStatus('${item.id}', '${mandalName}', this)">
                   ${btnText}
                 </button>
               </div>
@@ -316,35 +414,34 @@
         container.innerHTML = html;
       }
 
-      function handleSearch() {
-        var input = document.getElementById('searchInput');
-        var term = input.value.toUpperCase().trim();
-        var clearBtn = document.getElementById('clearBtn');
-        
-        clearBtn.style.display = term.length > 0 ? 'block' : 'none';
-        
-        var filtered = globalData.filter(function(item) {
-          return String(item.name).toUpperCase().includes(term);
-        });
-        renderList(filtered);
-      }
-
-      function clearSearch() {
-        var input = document.getElementById('searchInput');
-        input.value = '';
-        handleSearch(); 
-        input.focus();
-      }
-
-      function toggleStatus(rowIndex, mandalName, btnElement) {
-        // 🕒 UPDATE TIME: Tell the app "User is busy, stop refreshing!"
-        lastInteractionTime = Date.now();
-
+      async function toggleStatus(id, mandalName, btnElement) {
         var wasPresent = btnElement.classList.contains('present');
         var newIsPresent = !wasPresent;
 
-        // UI Update
-        if (newIsPresent) {
+        updateButtonUI(btnElement, newIsPresent);
+
+        var item = globalData.find(d => d.id == id);
+        if(item) item.status = newIsPresent;
+        updateHeaderCount(mandalName);
+
+        // PREPARE UPSERT
+        const payload = { ID: id }; 
+        payload[dateColName] = newIsPresent;
+
+        const { error } = await _supabase
+          .from('Attandance')
+          .upsert(payload) // Creates row if missing
+          .select();
+
+        if (error) {
+          console.error("Save failed:", error);
+          alert("Error: " + error.message);
+          updateButtonUI(btnElement, !newIsPresent);
+        }
+      }
+
+      function updateButtonUI(btnElement, isPresent) {
+        if (isPresent) {
           btnElement.classList.remove('absent');
           btnElement.classList.add('present');
           btnElement.innerText = "Present";
@@ -353,28 +450,6 @@
           btnElement.classList.add('absent');
           btnElement.innerText = "Absent";
         }
-
-        var item = globalData.find(d => d.rowIndex === rowIndex);
-        if(item) item.status = newIsPresent;
-
-        updateHeaderCount(mandalName);
-
-        const payload = JSON.stringify({
-          rowIndex: rowIndex,
-          colIndex: targetColIndex,
-          isChecked: newIsPresent
-        });
-
-        fetch(API_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
-          body: payload
-        }).then(response => {
-           console.log("Updated");
-        }).catch(err => {
-           console.error("Failed to update", err);
-        });
       }
 
       function updateHeaderCount(mandalName) {
@@ -390,6 +465,36 @@
           if(present > 0) badge.classList.add('active');
           else badge.classList.remove('active');
         }
+      }
+
+      function handleRealtimeUpdate(id, newStatus) {
+        var item = globalData.find(d => d.id == id);
+        if (item) {
+          item.status = newStatus;
+          var btn = document.getElementById('btn-' + item.id);
+          if (btn) {
+            updateButtonUI(btn, item.status);
+            updateHeaderCount(item.mandal);
+          }
+        }
+      }
+
+      function handleSearch() {
+        var input = document.getElementById('searchInput');
+        var term = input.value.toUpperCase().trim();
+        var clearBtn = document.getElementById('clearBtn');
+        clearBtn.style.display = term.length > 0 ? 'block' : 'none';
+        var filtered = globalData.filter(function(item) {
+          return String(item.name).toUpperCase().includes(term);
+        });
+        renderList(filtered);
+      }
+
+      function clearSearch() {
+        var input = document.getElementById('searchInput');
+        input.value = '';
+        handleSearch(); 
+        input.focus();
       }
     </script>
   </body>
